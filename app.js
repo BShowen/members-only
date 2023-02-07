@@ -7,7 +7,12 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 
+const session = require("express-session");
+
 const mongoose = require("mongoose");
+const MongoDBStore = require("connect-mongodb-session")(session);
+const Authenticator = require("./utils/authenticator");
+const User = require("./models/User");
 
 const app = express();
 
@@ -20,6 +25,11 @@ mongoose
   })
   .catch((error) => console.log("Mongoose connection error:", error.message));
 
+const sessionStore = new MongoDBStore({
+  uri: process.env.MONGO_DB_STRING,
+  collection: "sessions",
+});
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
@@ -27,8 +37,29 @@ app.set("view engine", "pug");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    name: "session",
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, //24 hours
+    store: sessionStore,
+  })
+);
+
+/**
+ * new Authenticator returns an array of middleware functions.
+ * This middleware must be applied before any routes that
+ * require authentication.
+ */
+app.use(
+  new Authenticator({
+    model: User,
+  })
+);
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
