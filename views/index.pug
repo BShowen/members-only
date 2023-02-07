@@ -2,4 +2,14 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  if(currentUser)
+    h1 Welcome back #{currentUser}
+  else 
+    form(action="/login", method="POST")
+      label(for="username") Username 
+      input(name="username", placeholder="username", type="text")  
+      label(for="password") Password
+      input(name="password", type="password")
+      label(for="remember") Remember 
+      input(name="remember", type="checkbox")
+      button Login
