@@ -2,11 +2,26 @@ extends layout
 
 block content
   h1= title
-  form(action="/login", method="POST")
+
+  if messages 
+    each message in messages 
+      p= message
+
+  form(action= formAction, method="POST")
     label(for="username") Username 
     input(name="username", placeholder="username", type="text")  
     label(for="password") Password
     input(name="password", type="password")
-    label(for="remember") Remember 
-    input(name="remember", type="checkbox")
-    button Login
+    if formAction === "/login"
+      label(for="remember") Remember 
+      input(name="remember", type="checkbox")
+      button Login
+    else 
+      button Sign up
+  
+  if formAction === "/login"
+    p Don't have an account? 
+      a(href="/signup") Sign up 
+  else
+    p Already have an account? 
+      a(href="/login") Login 
