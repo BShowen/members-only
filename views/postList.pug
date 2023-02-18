@@ -1,0 +1,28 @@
+extends layout 
+
+block content 
+  ul 
+    each post in postList
+      li(style = "list-style-type: none") 
+        div(
+          style=`
+            border:1px solid #F1F3F4; 
+            background-color:#F1F3F4; 
+            border-radius:10px; 
+            margin:10px;
+            padding: 5px;`
+        )
+          p(
+            style=`padding: 0px 30px;`
+          )= post.body
+          if isAuthenticated
+            //- Capitalize the username.
+            //- This code is split so the length isn't too long. 
+            - const capLetter = post.author.username.split('')[0].toUpperCase() 
+            - const letters = post.author.username.substring(1)
+            - const username = capLetter + letters
+            p(
+              style=`text-align: right;`
+            )= `Posted by ${username} on ${post.date}`
+    else 
+      p There are no posts.
