@@ -1,27 +1,61 @@
 extends layout
 
 block content
-  h1= title
+  .row.justify-content-center 
+    .col-sm-10.col-md-9.col-lg-8.col-xl-6.col-xxl-5
+      div.card.mt-5.overflow-hidden
+        div.card-body.bg-light
+          h1.card-title.text-center= title
 
-  if messages 
-    each message in messages 
-      p= message
+          form(action= formAction, method="POST")
+            div.form-floating.mb-3
+              input(
+                id="username", 
+                name="username", 
+                placeholder="Username", 
+                type="text", 
+                class="form-control form-control-lg"
+              )  
+              label(for="username") Username 
+            div.form-floating.mb-3
+              input(
+                id="password", 
+                name="password", 
+                type="password", 
+                placeholder="Password",
+                class="form-control form-control-lg"
+              )
+              label(for="password") Password
+              if formAction === "/login"
+                div.py-4.d-flex.flex-row.align-items-center
+                  label(for="remember", class="form-check-label") Remember 
+                  input(
+                    id="remember", 
+                    name="remember", 
+                    type="checkbox", 
+                    class="form-check-input mx-3"
+                    )
+                div.w-100
+                  button(type="submit", class="btn btn-primary btn-lg w-100 ") Login
+              else 
+                div.w-100.pt-5
+                  button(type="submit", class="btn btn-primary btn-lg w-100") Sign up
 
-  form(action= formAction, method="POST")
-    label(for="username") Username 
-    input(name="username", placeholder="username", type="text")  
-    label(for="password") Password
-    input(name="password", type="password")
-    if formAction === "/login"
-      label(for="remember") Remember 
-      input(name="remember", type="checkbox")
-      button Login
-    else 
-      button Sign up
-  
-  if formAction === "/login"
-    p Don't have an account? 
-      a(href="/signup") Sign up 
-  else
-    p Already have an account? 
-      a(href="/login") Login 
+          div.p-3
+            .row 
+              .col-12.d-flex.flex-row.align-items-center
+                hr.flex-grow-1
+                p.m-0.mx-2 or
+                hr.flex-grow-1
+          
+          div
+            if formAction === "/login"
+              a(href="/signup").btn.btn-lg.btn-primary.w-100 Sign up  
+            else
+              a(href="/login").btn.btn-lg.btn-primary.w-100 Login
+
+      if messages 
+        div.pt-5
+        each message in messages 
+          div(class="alert alert-danger", role="alert")
+            p.m-0= message  

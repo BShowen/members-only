@@ -50,6 +50,20 @@ app.use(
   })
 );
 
+/* Use Bootstrap */
+app.use(
+  "/bootstrap-css",
+  express.static(
+    path.join(__dirname, "node_modules/bootstrap/dist/css/bootstrap.min.css")
+  )
+);
+app.use(
+  "/bootstrap-js",
+  express.static(
+    path.join(__dirname, "node_modules/bootstrap/dist/js/bootstrap.min.js")
+  )
+);
+
 /**
  * new Authenticator returns an array of middleware functions.
  * This middleware must be applied before any routes that

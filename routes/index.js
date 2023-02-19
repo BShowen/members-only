@@ -6,9 +6,9 @@ const bcrypt = require("bcryptjs");
 
 /* GET home page. */
 router.get("/", (req, res) => {
-  // If user is logged in render the home page, otherwise redirect to login.
+  // If user is logged in render the home page, otherwise redirect to posts.
   if (req.auth.isAuthenticated()) return res.redirect("/home");
-  return res.redirect("/login");
+  return res.redirect("/posts");
 });
 
 /* GET login page. */
@@ -30,7 +30,11 @@ router.get("/home", (req, res, next) => {
     const id = mongoose.Types.ObjectId(req.auth.currentUser.id);
     User.findById(id, "username", (err, user) => {
       if (err) return next(err);
-      res.render("home", { title: "Home", currentUser: user });
+      res.render("home", {
+        title: "Home",
+        currentUser: user,
+        isAuthenticated: true,
+      });
     });
   });
 });
@@ -44,12 +48,11 @@ router.post("/login", (req, res, next) => {
       }
       return res.redirect("/home");
     } else {
-      /**
-       * Console log the messages for now. In the future these messages will
-       * be displayed to the user.
-       */
-      console.log(response.message);
-      res.redirect("/");
+      res.render("index", {
+        title: "Login",
+        formAction: "/login",
+        messages: [response.message],
+      });
     }
   });
 });
@@ -57,6 +60,14 @@ router.post("/login", (req, res, next) => {
 /* POST signup page */
 router.post("/signup", (req, res, next) => {
   const { username, password } = req.body;
+
+  if (username.length <= 0 || password.length <= 0) {
+    return res.render("index", {
+      title: "Sign up",
+      formAction: "/signup",
+      messages: ["Username and password are required."],
+    });
+  }
 
   User.findOne({ username: username }, (err, user) => {
     if (err) return next(err);
@@ -100,7 +111,7 @@ router.get("/logout", (req, res, next) => {
   req.auth.logoutUser((err) => {
     if (err) return next(err);
 
-    res.redirect("/");
+    res.redirect("/login");
   });
 });
 

@@ -1,8 +1,21 @@
 extends layout 
 
-block content 
-  form(action="", method="POST")
-    label(for="body") Content
-    textarea(name="body", cols="30", rows="10", id="body")
+block content
+  .row.justify-content-center 
+      .col-sm-10.col-md-9.col-lg-8.col-xl-6.col-xxl-5 
+        .card.mt-5.overflow-hidden
+          .card-body.bg-light
+            h1.card-title.text-center New Post
 
-    button(type="submit") Submit 
+            form(action="", method="POST")
+              .form-floating
+                textarea(
+                  name="body", 
+                  id="body", 
+                  style="height: 15rem",
+                  class="form-control"
+                  placeholder="Content"
+                )
+                label(for="body") Post content
+              div.w-100.pt-3
+                button(type="submit", class="btn btn-primary w-100") Submit 

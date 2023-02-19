@@ -3,6 +3,42 @@ html(lang="en")
   head
     title= title
     meta(charset="UTF-8")
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel="stylesheet", href="/bootstrap-css")
+    script(src="/bootstrap-js") 
   body
-    block content
+    
+
+
+
+    .container-lg
+     
+      nav.navbar.navbar-expand
+        .container-fluid
+          ul.nav.nav-pills.w-100.justify-content-between
+            li.nav-item
+                a.nav-link(
+                  href="/posts"
+                  class = (title === "Posts") ? "active" : "nav-link"
+                ) Posts
+            if(isAuthenticated)
+              li.nav-item
+                a.nav-link(
+                  href="/home", 
+                  class = (title === "Home") ? "active" : ""
+                ) Home
+              li
+                a.nav-link(
+                  href="/posts/create", 
+                  class = (title === "New post") ? "active" : ""
+                ) New post
+              li.nav-item 
+                //- This state is never active. Logout and redirect to login. 
+                a.nav-link(href="/logout") Logout
+            else 
+              a.nav-link(
+                href="/login", 
+                class = (title === "Login") ? "active" : ""
+              ) Login
+
+      block content
