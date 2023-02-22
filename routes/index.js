@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const Post = require("../models/Post");
+const async = require("async");
 
 /* GET home page. */
 router.get("/", (req, res) => {
@@ -28,14 +30,35 @@ router.get("/home", (req, res, next) => {
   req.auth.authenticateOrRedirect({ redirect: "/login" }, () => {
     // User is authenticated, render the home page.
     const id = mongoose.Types.ObjectId(req.auth.currentUser.id);
-    User.findById(id, "username", (err, user) => {
-      if (err) return next(err);
-      res.render("home", {
-        title: "Home",
-        currentUser: user,
-        isAuthenticated: true,
-      });
-    });
+
+    async.parallel(
+      {
+        user: (callback) => {
+          return User.findById(id, "username", (err, user) => {
+            if (err) return callback(err);
+            return callback(null, user);
+          });
+        },
+        posts: (callback) => {
+          return Post.find({ author: id })
+            .populate("author")
+            .exec((err, postList) => {
+              if (err) return callback(err);
+              return callback(null, postList);
+            });
+        },
+      },
+      (err, results) => {
+        if (err) return next(err);
+        console.log("results--->", results);
+        res.render("home", {
+          title: "Home",
+          currentUser: results.user,
+          isAuthenticated: true,
+          postList: results.posts,
+        });
+      }
+    );
   });
 });
 

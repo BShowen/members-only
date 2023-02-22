@@ -10,6 +10,7 @@
     "verbose": true
   },
   "dependencies": {
+    "async": "^3.2.4",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.0-alpha1",
     "connect-mongodb-session": "^3.1.1",
