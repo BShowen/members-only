@@ -1,21 +1,13 @@
 extends layout 
 
+include mixins/postComponent
+
 block content 
   .row.justify-content-center
     .col-sm-10.col-md-9.col-lg-8
       div.vstack.gap-3
         each post in postList
-          div
-            div.card
-              div.card-body
-                blockquote.blockquote.mb-0
-                  p= post.body
-                  if isAuthenticated
-                    footer.blockquote-footer
-                      if post.belongsToCurrentUser
-                        =`Posted by You on ${post.date}`
-                      else 
-                        =`Posted by ${post.author.name} on ${post.date}`
+          +postComponent(post)
         else 
           div.border
             p There are no posts.

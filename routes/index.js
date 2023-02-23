@@ -50,7 +50,12 @@ router.get("/home", (req, res, next) => {
       },
       (err, results) => {
         if (err) return next(err);
-        console.log("results--->", results);
+
+        results.posts.forEach((post) => {
+          post.belongsToCurrentUser =
+            post.author._id.toString() === results.user?._id?.toString();
+        });
+
         res.render("home", {
           title: "Home",
           currentUser: results.user,

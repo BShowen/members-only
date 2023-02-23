@@ -1,0 +1,12 @@
+mixin postComponent(post)
+  div
+    div.card
+      div.card-body
+        blockquote.blockquote.mb-0
+          p= post.body
+          if isAuthenticated
+            footer.blockquote-footer
+              if post.belongsToCurrentUser
+                =`Posted by You on ${post.date}`
+              else 
+                =`Posted by ${post.author.name} on ${post.date}`
