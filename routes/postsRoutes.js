@@ -2,31 +2,46 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Post = require("../models/Post");
+const User = require("../models/User");
+const async = require("async");
 
 /* GET list posts. */
 router.get("/", (req, res, next) => {
-  if (req.auth.isAuthenticated()) {
-    Post.find({})
-      .populate("author", "username -_id")
-      .exec((err, listPosts) => {
-        if (err) return next(err);
-        res.render("postList", {
-          title: "Posts",
-          isAuthenticated: true,
-          postList: listPosts,
+  async.parallel(
+    {
+      posts: (callback) => {
+        Post.find({})
+          .populate("author", "username _id")
+          .exec((err, listPosts) => {
+            if (err) return callback(err);
+            return callback(null, listPosts);
+          });
+      },
+      user: (callback) => {
+        if (!req.auth.isAuthenticated()) return callback(null, undefined);
+        const userId = mongoose.Types.ObjectId(req.session.userId);
+        User.findById(userId, "username _id", (err, user) => {
+          if (err) return callback(err);
+          callback(null, user);
         });
-      });
-  } else {
-    Post.find({}, "-_id body").exec((err, listPosts) => {
+      },
+    },
+    (err, results) => {
       if (err) return next(err);
+
+      results.posts.forEach((post) => {
+        post.belongsToCurrentUser =
+          post.author._id.toString() === results.user?._id?.toString();
+      });
 
       res.render("postList", {
         title: "Posts",
-        isAuthenticated: false,
-        postList: listPosts,
+        isAuthenticated: req.auth.isAuthenticated(),
+        postList: results.posts,
+        currentUser: results.user || undefined,
       });
-    });
-  }
+    }
+  );
 });
 
 /* GET form to create a new post */

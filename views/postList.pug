@@ -11,13 +11,11 @@ block content
                 blockquote.blockquote.mb-0
                   p= post.body
                   if isAuthenticated
-                    //- Capitalize the username.
-                    //- This code is split so the length isn't too long. 
-                    - const capLetter = post.author.username.split('')[0].toUpperCase() 
-                    - const letters = post.author.username.substring(1)
-                    - const username = capLetter + letters
                     footer.blockquote-footer
-                      =`Posted by ${username} on ${post.date}`
+                      if post.belongsToCurrentUser
+                        =`Posted by You on ${post.date}`
+                      else 
+                        =`Posted by ${post.author.name} on ${post.date}`
         else 
           div.border
             p There are no posts.
