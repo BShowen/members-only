@@ -14,6 +14,8 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const Authenticator = require("./utils/authenticator");
 const User = require("./models/User");
 
+const flashMessage = require("./utils/flashMessage");
+
 const app = express();
 
 require("dotenv").config();
@@ -74,6 +76,8 @@ app.use(
     model: User,
   })
 );
+
+app.use(flashMessage);
 
 app.use("/", indexRouter);
 app.use("/posts", postsRouter);

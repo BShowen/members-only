@@ -50,10 +50,8 @@ exports.GET_create_new_post = [
     req.auth.authenticateOrRedirect(next, { redirect: "/login" });
   },
   (req, res) => {
-    const messages = req.cookies.messages
-      ? JSON.parse(req.cookies.messages)
-      : [];
-    res.clearCookie("messages");
+    const messages = req.flash.get();
+
     return res.render("postForm", {
       title: "New post",
       isAuthenticated: true,

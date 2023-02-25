@@ -12,10 +12,11 @@ module.exports = (req, res, next, { redirect }) => {
       if (err) return next(err);
       if (!post) {
         // No post was found
-        res.cookie(
-          "messages",
-          JSON.stringify(["Sorry, we couldn't find that post."])
-        );
+        // res.cookie(
+        //   "messages",
+        //   JSON.stringify(["Sorry, we couldn't find that post."])
+        // );
+        req.flash.set("Sorry, we couldn't find that post.");
         res.redirect(redirect);
       } else if (post.author._id.toString() === userId.toString()) {
         // Make sure current user owns this post.
@@ -23,7 +24,8 @@ module.exports = (req, res, next, { redirect }) => {
         next();
       } else {
         // User doesn't own this post. Redirect home with message.
-        res.cookie("messages", JSON.stringify(["You cannot edit that post."]));
+        // res.cookie("messages", JSON.stringify(["You cannot edit that post."]));
+        req.flash.set("You cannot edit that post.");
         res.redirect(redirect);
       }
     });

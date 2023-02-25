@@ -135,10 +135,7 @@ exports.GET_home_page = [
             post.author._id.toString() === results.user?._id?.toString();
         });
 
-        const messages = req.cookies.messages
-          ? JSON.parse(req.cookies.messages)
-          : [];
-        res.clearCookie("messages");
+        const messages = req.flash.get();
 
         res.render("home", {
           title: "Home",
