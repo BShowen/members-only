@@ -56,11 +56,17 @@ router.get("/home", (req, res, next) => {
             post.author._id.toString() === results.user?._id?.toString();
         });
 
+        const messages = req.cookies.messages
+          ? JSON.parse(req.cookies.messages)
+          : [];
+        res.clearCookie("messages");
+
         res.render("home", {
           title: "Home",
           currentUser: results.user,
           isAuthenticated: true,
           postList: results.posts,
+          messages,
         });
       }
     );

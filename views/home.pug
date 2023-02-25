@@ -1,11 +1,15 @@
 extends layout 
 
 include mixins/postComponent
+include mixins/displayMessages
 
-block content 
+block content     
   .row.justify-content-center
     .col-sm-10.col-md-9.col-lg-8.d-flex.justify-content-center
       h1 Welcome back #{currentUser.username}
+
+  if messages
+    +displayMessages(messages)
 
   if postList && postList.length > 0
     .row.justify-content-center

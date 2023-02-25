@@ -1,12 +1,14 @@
 mixin postComponent(post)
   div
     div.card
+      div.card-header.d-flex.flex-row.justify-content-between(
+        style="min-height:40px"
+      )
+        if isAuthenticated 
+          if post.belongsToCurrentUser
+            p.m-0 Posted by you on #{post.date}
+            a(href=post.editLink) Edit 
+          else 
+            p.m-0 Posted by #{post.author.name} on #{post.date}
       div.card-body
-        blockquote.blockquote.mb-0
-          p= post.body
-          if isAuthenticated
-            footer.blockquote-footer
-              if post.belongsToCurrentUser
-                =`Posted by You on ${post.date}`
-              else 
-                =`Posted by ${post.author.name} on ${post.date}`
+        p.m-0= post.body

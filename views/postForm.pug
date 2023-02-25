@@ -1,5 +1,7 @@
 extends layout 
 
+include mixins/displayMessages
+
 block content
   .row.justify-content-center 
       .col-sm-10.col-md-9.col-lg-8.col-xl-6.col-xxl-5 
@@ -16,6 +18,11 @@ block content
                   class="form-control"
                   placeholder="Content"
                 )
+                  if post 
+                    = post.body
                 label(for="body") Post content
               div.w-100.pt-3
                 button(type="submit", class="btn btn-primary w-100") Submit 
+      
+  if messages 
+    +displayMessages(messages)
