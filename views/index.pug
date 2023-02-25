@@ -1,5 +1,7 @@
 extends layout
 
+include mixins/displayMessages
+
 block content
   .row.justify-content-center 
     .col-sm-10.col-md-9.col-lg-8.col-xl-6.col-xxl-5
@@ -54,8 +56,6 @@ block content
             else
               a(href="/login").btn.btn-lg.btn-primary.w-100 Login
 
-      if messages 
-        div.pt-5
-        each message in messages 
-          div(class="alert alert-danger", role="alert")
-            p.m-0= message  
+  if messages 
+    +displayMessages(messages)
+        

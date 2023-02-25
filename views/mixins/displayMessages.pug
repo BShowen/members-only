@@ -1,0 +1,7 @@
+mixin displayMessages(messageList)
+  .row.justify-content-center 
+    .col-sm-10.col-md-9.col-lg-8.col-xl-6.col-xxl-5
+      div.pt-5
+        each message in messageList 
+          div(class="alert alert-danger text-center", role="alert")
+            p.m-0= message  
