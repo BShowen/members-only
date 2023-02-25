@@ -19,4 +19,8 @@ postSchema.virtual("editLink").get(function () {
   return `/posts/update/${this._id}`;
 });
 
+postSchema.virtual("deleteLink").get(function () {
+  return `/posts/delete/${this._id}`;
+});
+
 module.exports = mongoose.model("Post", postSchema);

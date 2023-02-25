@@ -17,4 +17,7 @@ router.post("/update/:postId", postController.POST_update_post);
 /* POST create a new posts from submitted form */
 router.post("/create", postController.POST_create_new_post);
 
+/* POST delete a post */
+router.post("/delete/:postId", postController.POST_delete_post);
+
 module.exports = router;

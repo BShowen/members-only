@@ -7,7 +7,10 @@ mixin postComponent(post)
         if isAuthenticated 
           if post.belongsToCurrentUser
             p.m-0 Posted by you on #{post.date}
-            a(href=post.editLink) Edit 
+            div.d-flex.flex-row
+              a(href=post.editLink) Edit 
+              form(action=post.deleteLink, method="post")
+                button Delete 
           else 
             p.m-0 Posted by #{post.author.name} on #{post.date}
       div.card-body

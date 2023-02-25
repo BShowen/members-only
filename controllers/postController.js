@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const validatePostAndUser = require("../utils/updatePost");
 const Post = require("../models/Post");
 const User = require("../models/User");
+const path = require("node:path");
 
 /* Return a list of posts. */
 exports.index = (req, res, next) => {
@@ -38,6 +39,7 @@ exports.index = (req, res, next) => {
         isAuthenticated: req.auth.isAuthenticated(),
         postList: results.posts,
         currentUser: results.user || undefined,
+        messages: req.flash.get(),
       });
     }
   );
@@ -120,6 +122,23 @@ exports.POST_update_post = [
         // posts page.Which ever was visited last.
         res.redirect("/home");
       });
+    });
+  },
+];
+
+exports.POST_delete_post = [
+  (req, res, next) => {
+    req.auth.authenticateOrRedirect(next, { redirect: "/" });
+  },
+  (req, res, next) => {
+    return validatePostAndUser(req, res, next, { redirect: "/" });
+  },
+  (req, res) => {
+    const postId = mongoose.Types.ObjectId(req.params.postId);
+    Post.findByIdAndDelete(postId, (err) => {
+      if (err) return next(err);
+      req.flash.set("Post deleted.");
+      res.redirect(`/${path.basename(req.get("referer"))}`);
     });
   },
 ];
