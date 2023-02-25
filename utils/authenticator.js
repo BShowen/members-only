@@ -139,13 +139,14 @@ module.exports = class Authenticator {
     });
   }
 
-  #authenticateOrRedirect(req, res, { redirect }, cb) {
+  #authenticateOrRedirect(req, res, next, { redirect }) {
     if (typeof redirect !== "string") {
       throw new Error("redirect should be a string, received:", redirect);
     }
     if (this.#isAuthenticated(req)) {
-      return cb();
+      next();
+    } else {
+      res.redirect(redirect);
     }
-    res.redirect(redirect);
   }
 };
