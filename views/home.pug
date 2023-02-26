@@ -2,6 +2,7 @@ extends layout
 
 include mixins/postComponent
 include mixins/displayMessages
+include mixins/userStats
 
 block content 
   +displayMessages(messages)
@@ -16,16 +17,7 @@ block content
             )
           .w-100.d-flex.flex-row.flex-nowrap.justify-content-center
             h1= currentUser.username
-          .row.justify-content-center 
-            .col.d-flex.flex-column.align-items-center
-              p.m-0 Posts
-              p.m-0 13
-            .col.d-flex.flex-column.align-items-center
-              p.m-0 Followers
-              p.m-0 20
-            .col.d-flex.flex-column.align-items-center
-              p.m-0 Following
-              p.m-0 10
+          +userStats(currentUser)
 
   if postList && postList.length > 0
     .row.justify-content-center.pb-5

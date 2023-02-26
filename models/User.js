@@ -13,4 +13,11 @@ userSchema.virtual("name").get(function () {
   return capLetter + letters;
 });
 
+userSchema.virtual("postCount", {
+  ref: "Post", // The model to use
+  localField: "_id", // Find people where `localField`
+  foreignField: "author", // is equal to foreignField
+  count: true, // And only get the number of docs
+});
+
 module.exports = mongoose.model("User", userSchema);

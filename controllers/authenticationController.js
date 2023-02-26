@@ -113,10 +113,12 @@ exports.GET_home_page = [
     async.parallel(
       {
         user: (callback) => {
-          return User.findById(id, "username", (err, user) => {
-            if (err) return callback(err);
-            return callback(null, user);
-          });
+          return User.findById(id, "username")
+            .populate("postCount")
+            .exec((err, user) => {
+              if (err) return callback(err);
+              return callback(null, user);
+            });
         },
         posts: (callback) => {
           return Post.find({ author: id })
@@ -129,11 +131,6 @@ exports.GET_home_page = [
       },
       (err, results) => {
         if (err) return next(err);
-
-        results.posts.forEach((post) => {
-          post.belongsToCurrentUser =
-            post.author._id.toString() === results.user?._id?.toString();
-        });
 
         const messages = req.flash.get();
 
