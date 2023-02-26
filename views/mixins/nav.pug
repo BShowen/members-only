@@ -13,6 +13,11 @@ mixin nav()
               href="/home", 
               class = (title === "Home") ? "active" : ""
             ) Profile
+          li.nav-item
+            a.nav-link(
+              href="/users", 
+              class = (title === "Users") ? "active" : ""
+            ) Users
           li
             a.nav-link(
               href="/posts/create", 

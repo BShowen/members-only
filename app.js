@@ -6,6 +6,7 @@ const logger = require("morgan");
 
 const indexRouter = require("./routes/index");
 const postsRouter = require("./routes/postsRoutes");
+const userRouter = require("./routes/userRoutes");
 
 const session = require("express-session");
 
@@ -85,6 +86,7 @@ app.use(flashMessage);
 
 app.use("/", indexRouter);
 app.use("/posts", postsRouter);
+app.use("/users", userRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

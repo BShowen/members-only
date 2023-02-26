@@ -1,0 +1,10 @@
+extends layout 
+
+include mixins/profileCard
+
+block content 
+  .row.justify-content-center.pb-5
+    .col-sm-8.col-md-6.col-xl-5.col-xxl-4
+      .vstack.gap-3
+        each user in userList
+          +profileCard(user)

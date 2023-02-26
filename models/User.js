@@ -20,4 +20,8 @@ userSchema.virtual("postCount", {
   count: true, // And only get the number of docs
 });
 
+userSchema.virtual("addLink").get(function () {
+  return `users/friendRequest/${this._id.toString()}`;
+});
+
 module.exports = mongoose.model("User", userSchema);

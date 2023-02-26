@@ -1,0 +1,10 @@
+mixin profileCard(user)
+  .card.w-100 
+    .card-body 
+      div.d-flex.flex-row.align-items-center.gap-1.w-100
+        div.h-100.d-flex.flex-column.justify-content-center
+          i.bi.bi-person-circle.fs-2
+        div.h-100.d-flex.flex-column.justify-content-center.me-auto
+          p.m-0= user.username
+        div.h-100.d-flex.flex-column.justify-content-center
+          a(href=user.addLink).btn.btn-primary Add

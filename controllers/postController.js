@@ -67,7 +67,7 @@ exports.POST_create_new_post = [
   (req, res, next) => {
     req.auth.authenticateOrRedirect(next, { redirect: "/login" });
   },
-  (req, res) => {
+  (req, res, next) => {
     const dateTimeFormatter = new Intl.DateTimeFormat();
     const post = new Post({
       author: mongoose.Types.ObjectId(req.session.userId),
