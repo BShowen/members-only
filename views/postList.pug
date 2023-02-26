@@ -5,7 +5,7 @@ include mixins/displayMessages
 
 block content 
 
-  if messages 
+  if messages && messages.length > 0
     +displayMessages(messages)
 
   .row.justify-content-center
