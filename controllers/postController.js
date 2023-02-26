@@ -31,13 +31,7 @@ exports.index = (req, res, next) => {
 
       // sort posts by date. Newest to oldest.
       results.posts.sort((postA, postB) => {
-        if (postA < postB) {
-          return 1;
-        } else if (postA > postB) {
-          return -1;
-        } else {
-          return 0;
-        }
+        return postA.compare(postB);
       });
 
       res.render("postList", {
