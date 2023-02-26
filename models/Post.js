@@ -11,10 +11,6 @@ const postSchema = new Schema({
   date: { type: String, required: true },
 });
 
-postSchema.virtual("validateAuthorName").get((userId) => {
-  this.postBelongsToAuthor = this.author._id.toString() === userId.toString();
-});
-
 postSchema.virtual("editLink").get(function () {
   return `/posts/update/${this._id}`;
 });

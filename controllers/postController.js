@@ -29,9 +29,15 @@ exports.index = (req, res, next) => {
     (err, results) => {
       if (err) return next(err);
 
-      results.posts.forEach((post) => {
-        post.belongsToCurrentUser =
-          post.author._id.toString() === results.user?._id?.toString();
+      // sort posts by date. Newest to oldest.
+      results.posts.sort((postA, postB) => {
+        if (postA < postB) {
+          return 1;
+        } else if (postA > postB) {
+          return -1;
+        } else {
+          return 0;
+        }
       });
 
       res.render("postList", {
