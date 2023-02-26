@@ -6,13 +6,13 @@
     "start": "nodemon ./bin/www"
   },
   "nodemonConfig": {
-    "ext": "js json pug",
-    "verbose": true
+    "ext": "js json pug"
   },
   "dependencies": {
     "async": "^3.2.4",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.0-alpha1",
+    "bootstrap-icons": "^1.10.3",
     "connect-mongodb-session": "^3.1.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

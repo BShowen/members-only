@@ -1,17 +1,22 @@
-mixin postComponent(post)
+mixin postComponent(post, {canEdit})
   div
     div.card
-      div.card-header.d-flex.flex-row.justify-content-between(
-        style="min-height:40px"
-      )
-        if isAuthenticated 
-          if post.belongsToCurrentUser
-            p.m-0 Posted by you on #{post.date}
-            div.d-flex.flex-row
-              a(href=post.editLink) Edit 
-              form(action=post.deleteLink, method="post")
-                button Delete 
-          else 
-            p.m-0 Posted by #{post.author.name} on #{post.date}
+      if canEdit
+        div.card-header.d-flex.flex-row.justify-content-end.gap-2
+          a(href=post.editLink).btn.btn-primary Edit 
+          form(action=post.deleteLink, method="post")
+            button.btn.btn-primary Delete 
       div.card-body
         p.m-0= post.body
+      if isAuthenticated 
+        div.p-2.d-flex.flex-row.justify-content-between
+          div.d-flex.flex-row.align-items-center.gap-1.w-100
+            div.h-100.d-flex.flex-column.justify-content-center
+              i.bi.bi-person-circle.fs-2
+            div.h-100.d-flex.flex-column.justify-content-center.me-auto
+              p.m-0= post.author.name
+            div.h-100.d-flex.flex-column.justify-content-center
+              p.m-0= post.date
+
+            //- div.h-100.d-flex.flex-column.justify-content-center
+            //-   i.bi.bi-suit-heart.fs-5

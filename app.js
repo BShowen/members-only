@@ -65,6 +65,10 @@ app.use(
     path.join(__dirname, "node_modules/bootstrap/dist/js/bootstrap.min.js")
   )
 );
+app.use(
+  "/bootstrap-icons",
+  express.static(path.join(__dirname, "node_modules/bootstrap-icons/font/"))
+);
 
 /**
  * new Authenticator returns an array of middleware functions.

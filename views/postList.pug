@@ -8,11 +8,8 @@ block content
   if messages && messages.length > 0
     +displayMessages(messages)
 
-  .row.justify-content-center
+  .row.justify-content-center.pb-5
     .col-sm-10.col-md-9.col-lg-8
       div.vstack.gap-3
         each post in postList
-          +postComponent(post)
-        else 
-          div.border
-            p There are no posts.
+          +postComponent(post, {canEdit: false})

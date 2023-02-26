@@ -1,18 +1,18 @@
 mixin nav()
-  nav.navbar.navbar-expand
+  nav.navbar.navbar-expand.bg-light-subtle.shadow-sm.mb-3
     .container-fluid
       ul.nav.nav-pills.w-100.justify-content-end
         li.nav-item
             a.nav-link(
               href="/posts"
-              class = (title === "Posts") ? "active" : "nav-link"
+              class = (title === "Posts") ? "active" : ""
             ) Posts
         if isAuthenticated
           li.nav-item
             a.nav-link(
               href="/home", 
               class = (title === "Home") ? "active" : ""
-            ) Home
+            ) Profile
           li
             a.nav-link(
               href="/posts/create", 

@@ -3,24 +3,34 @@ extends layout
 include mixins/postComponent
 include mixins/displayMessages
 
-block content     
-  .row.justify-content-center
-    .col-sm-10.col-md-9.col-lg-8.d-flex.justify-content-center
-      h1 Welcome back #{currentUser.username}
+block content 
+  +displayMessages(messages)
 
-  if messages && messages.length > 0
-    +displayMessages(messages)
+  .row.justify-content-center.pb-5
+    .col-sm-8.col-md-6.col-xl-5.col-xxl-4.d-flex.justify-content-center
+      .card.w-100
+        .card-body.shadow-md
+          .w-100.d-flex.flex-row.flex-nowrap.justify-content-center
+            i.bi.bi-person-circle.fs-1(
+              style="font-size:100px !important;"
+            )
+          .w-100.d-flex.flex-row.flex-nowrap.justify-content-center
+            h1= currentUser.username
+          .row.justify-content-center 
+            .col.d-flex.flex-column.align-items-center
+              p.m-0 Posts
+              p.m-0 13
+            .col.d-flex.flex-column.align-items-center
+              p.m-0 Followers
+              p.m-0 20
+            .col.d-flex.flex-column.align-items-center
+              p.m-0 Following
+              p.m-0 10
 
   if postList && postList.length > 0
-    .row.justify-content-center
-      .col-sm-10.col-md-9.col-lg-8
-        p Your posts
-    .row.justify-content-center
+    .row.justify-content-center.pb-5
       .col-sm-10.col-md-9.col-lg-8
         div.vstack.gap-3
           each post in postList
-            +postComponent(post)
-  else 
-    div.border
-      p There are no posts.
+            +postComponent(post, {canEdit: true})
 
