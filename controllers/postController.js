@@ -46,48 +46,34 @@ exports.index = (req, res, next) => {
 };
 
 /* get request to create new post. */
-exports.GET_create_new_post = [
-  (req, res, next) => {
-    // Allow authenticated users only.
-    req.auth.authenticateOrRedirect(next, { redirect: "/login" });
-  },
-  (req, res) => {
-    const messages = req.flash.get();
+exports.GET_create_new_post = (req, res) => {
+  const messages = req.flash.get();
 
-    return res.render("postForm", {
-      title: "New post",
-      isAuthenticated: true,
-      messages,
-    });
-  },
-];
+  return res.render("postForm", {
+    title: "New post",
+    isAuthenticated: true,
+    messages,
+  });
+};
 
 /* post request to create new post */
-exports.POST_create_new_post = [
-  (req, res, next) => {
-    req.auth.authenticateOrRedirect(next, { redirect: "/login" });
-  },
-  (req, res, next) => {
-    const dateTimeFormatter = new Intl.DateTimeFormat();
-    const post = new Post({
-      author: mongoose.Types.ObjectId(req.session.userId),
-      body: req.body.body,
-      date: dateTimeFormatter.format(Date.now()),
-    });
+exports.POST_create_new_post = (req, res, next) => {
+  const dateTimeFormatter = new Intl.DateTimeFormat();
+  const post = new Post({
+    author: mongoose.Types.ObjectId(req.session.userId),
+    body: req.body.body,
+    date: dateTimeFormatter.format(Date.now()),
+  });
 
-    post.save((err) => {
-      if (err) return next(err);
+  post.save((err) => {
+    if (err) return next(err);
 
-      res.redirect("/posts");
-    });
-  },
-];
+    res.redirect("/posts");
+  });
+};
 
 /* get request to update a post */
 exports.GET_update_post = [
-  (req, res, next) => {
-    return req.auth.authenticateOrRedirect(next, { redirect: "/" });
-  },
   (req, res, next) => {
     return validatePostAndUser(req, res, next, { redirect: "/home" });
   },
@@ -103,9 +89,6 @@ exports.GET_update_post = [
 
 /* post request to update a post. */
 exports.POST_update_post = [
-  (req, res, next) => {
-    return req.auth.authenticateOrRedirect(next, { redirect: "/" });
-  },
   (req, res, next) => {
     return validatePostAndUser(req, res, next, { redirect: "/home" });
   },
@@ -127,9 +110,6 @@ exports.POST_update_post = [
 ];
 
 exports.POST_delete_post = [
-  (req, res, next) => {
-    req.auth.authenticateOrRedirect(next, { redirect: "/" });
-  },
   (req, res, next) => {
     return validatePostAndUser(req, res, next, { redirect: "/" });
   },

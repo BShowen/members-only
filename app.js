@@ -82,6 +82,23 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  /**
+   * Unauthenticated users can view only posts, login, or signup pages.
+   * Authenticated users can view any page.
+   */
+  if (
+    req.auth.isAuthenticated() ||
+    req.url === "/posts" ||
+    req.url === "/login" ||
+    req.url === "/signup"
+  ) {
+    return next();
+  } else {
+    return res.redirect("/login");
+  }
+});
+
 app.use(flashMessage);
 
 app.use("/", indexRouter);

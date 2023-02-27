@@ -102,46 +102,41 @@ exports.POST_signup_page = (req, res, next) => {
 };
 
 /* GET home page */
-exports.GET_home_page = [
-  (req, res, next) => {
-    req.auth.authenticateOrRedirect(next, { redirect: "/login" });
-  },
-  (req, res, next) => {
-    // User is authenticated, render the home page.
-    const id = mongoose.Types.ObjectId(req.auth.currentUser.id);
+exports.GET_home_page = (req, res, next) => {
+  // User is authenticated, render the home page.
+  const id = mongoose.Types.ObjectId(req.auth.currentUser.id);
 
-    async.parallel(
-      {
-        user: (callback) => {
-          return User.findById(id, "username")
-            .populate("postCount")
-            .exec((err, user) => {
-              if (err) return callback(err);
-              return callback(null, user);
-            });
-        },
-        posts: (callback) => {
-          return Post.find({ author: id })
-            .populate("author")
-            .exec((err, postList) => {
-              if (err) return callback(err);
-              return callback(null, postList);
-            });
-        },
+  async.parallel(
+    {
+      user: (callback) => {
+        return User.findById(id, "username")
+          .populate("postCount")
+          .exec((err, user) => {
+            if (err) return callback(err);
+            return callback(null, user);
+          });
       },
-      (err, results) => {
-        if (err) return next(err);
+      posts: (callback) => {
+        return Post.find({ author: id })
+          .populate("author")
+          .exec((err, postList) => {
+            if (err) return callback(err);
+            return callback(null, postList);
+          });
+      },
+    },
+    (err, results) => {
+      if (err) return next(err);
 
-        const messages = req.flash.get();
+      const messages = req.flash.get();
 
-        res.render("home", {
-          title: "Home",
-          currentUser: results.user,
-          isAuthenticated: true,
-          postList: results.posts,
-          messages,
-        });
-      }
-    );
-  },
-];
+      res.render("home", {
+        title: "Home",
+        currentUser: results.user,
+        isAuthenticated: true,
+        postList: results.posts,
+        messages,
+      });
+    }
+  );
+};
