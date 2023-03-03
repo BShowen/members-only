@@ -7,4 +7,6 @@ mixin profileCard(user)
         div.h-100.d-flex.flex-column.justify-content-center.me-auto
           p.m-0= user.username
         div.h-100.d-flex.flex-column.justify-content-center
-          a(href=user.addLink).btn.btn-primary Add
+          form(action="/users/followUser", method="POST") 
+            input(type="text", value=user._id, name="userId" hidden)
+            button.btn.btn-primary Follow

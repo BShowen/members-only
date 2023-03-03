@@ -111,6 +111,8 @@ exports.GET_home_page = (req, res, next) => {
       user: (callback) => {
         return User.findById(id, "username")
           .populate("postCount")
+          .populate("followCount")
+          .populate("followerCount")
           .exec((err, user) => {
             if (err) return callback(err);
             return callback(null, user);

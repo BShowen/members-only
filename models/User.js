@@ -20,6 +20,20 @@ userSchema.virtual("postCount", {
   count: true, // And only get the number of docs
 });
 
+userSchema.virtual("followCount", {
+  ref: "Follow",
+  localField: "_id",
+  foreignField: "follower",
+  count: true,
+});
+
+userSchema.virtual("followerCount", {
+  ref: "Follow",
+  localField: "_id",
+  foreignField: "following",
+  count: true,
+});
+
 userSchema.virtual("addLink").get(function () {
   return `users/friendRequest/${this._id.toString()}`;
 });
