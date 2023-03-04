@@ -113,6 +113,16 @@ exports.GET_home_page = (req, res, next) => {
           .populate("postCount")
           .populate("followCount")
           .populate("followerCount")
+          .exec((err, user) => {
+            if (err) return callback(err);
+            return callback(null, user);
+          });
+      },
+      followingList: (callback) => {
+        if (req.query.view !== "following") {
+          return callback(null, []);
+        }
+        return User.findById(id, "username")
           .populate({
             path: "following",
             populate: {
@@ -120,6 +130,22 @@ exports.GET_home_page = (req, res, next) => {
               select: "-password",
             },
           })
+          .exec((err, user) => {
+            if (err) return callback(err);
+            /**
+             * Return only the user objects from the list of follows.
+             */
+            callback(
+              null,
+              user.following.map((follow) => follow.following)
+            );
+          });
+      },
+      followerList: (callback) => {
+        if (req.query.view !== "followers") {
+          return callback(null, []);
+        }
+        return User.findById(id)
           .populate({
             path: "followers",
             populate: {
@@ -128,8 +154,11 @@ exports.GET_home_page = (req, res, next) => {
             },
           })
           .exec((err, user) => {
-            if (err) return callback(err);
-            return callback(null, user);
+            if (err) return next(err);
+            return callback(
+              null,
+              user.followers.map((follow) => follow.follower)
+            );
           });
       },
       posts: (callback) => {
@@ -145,13 +174,12 @@ exports.GET_home_page = (req, res, next) => {
       if (err) return next(err);
 
       const messages = req.flash.get();
-
       res.render("home", {
         title: "Home",
         currentUser: results.user,
         postList: results.posts,
-        followerList: results.user.followers.map((follow) => follow.follower),
-        followingList: results.user.following.map((follow) => follow.following),
+        followerList: results.followerList,
+        followingList: results.followingList,
         queryParam: req.query.view || "posts",
         messages,
       });
