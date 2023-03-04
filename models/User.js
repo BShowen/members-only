@@ -34,6 +34,12 @@ userSchema.virtual("followerCount", {
   count: true,
 });
 
+userSchema.virtual("following", {
+  ref: "Follow",
+  localField: "_id",
+  foreignField: "follower",
+});
+
 userSchema.virtual("addLink").get(function () {
   return `users/friendRequest/${this._id.toString()}`;
 });

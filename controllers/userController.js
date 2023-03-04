@@ -16,8 +16,24 @@ exports.GET_all_users = (req, res, next) => {
 
 exports.POST_follow_user = [
   (req, res, next) => {
-    // ToDo: Make sure user isn't already following the user.
-    next();
+    const followerId = mongoose.Types.ObjectId(req.session.userId);
+    const following = mongoose.Types.ObjectId(req.body.userId);
+    User.findById(followerId)
+      .populate("following")
+      .exec((err, user) => {
+        if (err) return next(err);
+
+        // Make sure the user isn't already following the other user.
+        const isFollowing = user.following.some((follow) => {
+          return follow.following.toString() === following.toString();
+        });
+        if (isFollowing) {
+          req.flash.set("Already following this user.");
+          return res.redirect("/users");
+        } else {
+          next();
+        }
+      });
   },
   (req, res, next) => {
     const follower = mongoose.Types.ObjectId(req.session.userId);
