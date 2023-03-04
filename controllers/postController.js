@@ -36,7 +36,6 @@ exports.index = (req, res, next) => {
 
       res.render("postList", {
         title: "Posts",
-        isAuthenticated: req.auth.isAuthenticated(),
         postList: results.posts,
         currentUser: results.user || undefined,
         messages: req.flash.get(),
@@ -51,7 +50,6 @@ exports.GET_create_new_post = (req, res) => {
 
   return res.render("postForm", {
     title: "New post",
-    isAuthenticated: true,
     messages,
   });
 };
@@ -81,7 +79,6 @@ exports.GET_update_post = [
     // Render the edit form
     return res.render("postForm", {
       title: "Update post",
-      isAuthenticated: req.auth.isAuthenticated(),
       post: req.currentPost,
     });
   },

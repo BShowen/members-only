@@ -99,6 +99,12 @@ app.use((req, res, next) => {
   }
 });
 
+app.use((req, res, next) => {
+  /* Provide the isAuthenticated variable to all views. */
+  res.locals.isAuthenticated = req.auth.isAuthenticated();
+  next();
+});
+
 app.use(flashMessage);
 
 app.use("/", indexRouter);

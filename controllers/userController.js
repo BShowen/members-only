@@ -7,7 +7,6 @@ exports.GET_all_users = (req, res, next) => {
     if (err) return next(err);
 
     res.render("userList", {
-      isAuthenticated: req.auth.isAuthenticated(),
       title: "Users",
       userList: results,
       messages: req.flash.get(),
@@ -46,7 +45,6 @@ exports.GET_all_friend_requests = (req, res) => {
     .exec((err, results) => {
       if (err) return next(err);
       res.render("userList", {
-        isAuthenticated: req.auth.isAuthenticated(),
         title: "Friend Requests",
         messages: req.flash.get(),
         userList: results.map((reqDoc) => reqDoc.requester),

@@ -135,7 +135,6 @@ exports.GET_home_page = (req, res, next) => {
       res.render("home", {
         title: "Home",
         currentUser: results.user,
-        isAuthenticated: true,
         postList: results.posts,
         messages,
       });
