@@ -3,6 +3,7 @@ extends layout
 include mixins/postComponent
 include mixins/displayMessages
 include mixins/userStats
+include mixins/profileCard
 
 block content 
   +displayMessages(messages)
@@ -19,10 +20,25 @@ block content
             h1= currentUser.username
           +userStats(currentUser)
 
-  if postList && postList.length > 0
-    .row.justify-content-center.pb-5
-      .col-sm-10.col-md-9.col-lg-8
-        div.vstack.gap-3
-          each post in postList
-            +postComponent(post, {canEdit: true})
+  if queryParam === "posts"
+    if postList && postList.length > 0
+      .row.justify-content-center.pb-5
+        .col-sm-10.col-md-9.col-lg-8
+          div.vstack.gap-3
+            each post in postList
+              +postComponent(post, {canEdit: true})
+  else if queryParam === "followers"
+    if followerList && followerList.length > 0
+      .row.justify-content-center.pb-5
+        .col-sm-10.col-md-9.col-lg-8
+          div.vstack.gap-3
+            each user in followerList 
+              +profileCard(user)
+  else if queryParam === "following"
+    if followingList && followingList.length > 0
+        .row.justify-content-center.pb-5
+          .col-sm-10.col-md-9.col-lg-8
+            div.vstack.gap-3
+              each user in followingList 
+                +profileCard(user)
 

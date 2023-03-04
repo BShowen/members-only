@@ -113,6 +113,20 @@ exports.GET_home_page = (req, res, next) => {
           .populate("postCount")
           .populate("followCount")
           .populate("followerCount")
+          .populate({
+            path: "following",
+            populate: {
+              path: "following",
+              select: "-password",
+            },
+          })
+          .populate({
+            path: "followers",
+            populate: {
+              path: "follower",
+              select: "-password",
+            },
+          })
           .exec((err, user) => {
             if (err) return callback(err);
             return callback(null, user);
@@ -136,6 +150,9 @@ exports.GET_home_page = (req, res, next) => {
         title: "Home",
         currentUser: results.user,
         postList: results.posts,
+        followerList: results.user.followers.map((follow) => follow.follower),
+        followingList: results.user.following.map((follow) => follow.following),
+        queryParam: req.query.view || "posts",
         messages,
       });
     }
