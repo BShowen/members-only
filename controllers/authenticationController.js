@@ -132,13 +132,17 @@ exports.GET_home_page = (req, res, next) => {
           })
           .exec((err, user) => {
             if (err) return callback(err);
-            /**
-             * Return only the user objects from the list of follows.
-             */
-            callback(
-              null,
-              user.following.map((follow) => follow.following)
-            );
+
+            // Set the action link and action name for the users that this
+            // user follows.
+            const followingList = user.following.map((follow) => {
+              const followee = follow.following;
+              followee.setActionUnfollow();
+              return followee;
+            });
+
+            // Return only the user objects from the list of follows.
+            callback(null, followingList);
           });
       },
       followerList: (callback) => {
@@ -153,12 +157,21 @@ exports.GET_home_page = (req, res, next) => {
               select: "-password",
             },
           })
+          .populate("following")
           .exec((err, user) => {
             if (err) return next(err);
-            return callback(
-              null,
-              user.followers.map((follow) => follow.follower)
-            );
+
+            const followerList = user.followers.map((follow) => {
+              const follower = follow.follower;
+              if (user.isFollowing(follower)) {
+                follower.setActionUnfollow();
+              } else {
+                follower.setActionFollow();
+              }
+              return follower;
+            });
+
+            return callback(null, followerList);
           });
       },
       posts: (callback) => {

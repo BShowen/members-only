@@ -6,6 +6,8 @@ const userController = require("../controllers/userController");
 router.get("/", userController.GET_all_users);
 
 /* POSt request to follow a user  */
-router.post("/followUser", userController.POST_follow_user);
+router.post("/follow", userController.POST_follow_user);
+
+router.post("/unfollow", userController.POST_unfollow_user);
 
 module.exports = router;

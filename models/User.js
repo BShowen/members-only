@@ -46,8 +46,30 @@ userSchema.virtual("followers", {
   foreignField: "following",
 });
 
-userSchema.virtual("addLink").get(function () {
-  return `users/friendRequest/${this._id.toString()}`;
-});
+userSchema.methods.isFollowing = function (user) {
+  // Returns true if logged in user is following user
+  // Otherwise returns false.
+  // For this method to work, the controller must populate("following")
+  return this.following.some((follow) => {
+    return follow.following.toString() === user._id.toString();
+  });
+};
+
+/**
+ * When this user is rendered into a view, we need to allow other users to
+ * either follow or unfollow this user. setActionFollow and setActionUnfollow
+ * will tell this instance to render a "Follow" button or an "unFollow" button.
+ * These methods are called from the appropriate controller when rendering the
+ * user.
+ */
+userSchema.methods.setActionUnfollow = function () {
+  this.actionLink = "/users/unfollow";
+  this.actionName = "Unfollow";
+};
+
+userSchema.methods.setActionFollow = function () {
+  this.actionLink = "/users/follow";
+  this.actionName = "Follow";
+};
 
 module.exports = mongoose.model("User", userSchema);
