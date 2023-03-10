@@ -81,10 +81,15 @@ exports.POST_follow_user = [
 ];
 
 exports.POST_unfollow_user = [
-  (req, res) => {
+  (req, res, next) => {
     // Find the follow in the Follow collection.
     const currentUserId = mongoose.Types.ObjectId(req.session.userId);
-    Follow.findOneAndDelete({ follower: currentUserId })
+
+    // The user that the logged in user wants to unfollow
+    const unfollowId = mongoose.Types.ObjectId(req.body.userId);
+    console.log({ unfollowId });
+
+    Follow.findOneAndDelete({ follower: currentUserId, following: unfollowId })
       .populate({ path: "following", select: "-password" })
       .exec((err, follow) => {
         if (err) return next(err);
