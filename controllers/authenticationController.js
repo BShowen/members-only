@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Post = require("../models/Post");
+const CourierClient = require("@trycourier/courier").CourierClient;
 
 /* Get the Home or Posts page */
 exports.GET_root_page = (req, res) => {
@@ -14,7 +15,11 @@ exports.GET_root_page = (req, res) => {
 /* GET the login page */
 exports.GET_login_page = (req, res) => {
   if (req.auth.isAuthenticated()) return res.redirect("/home");
-  return res.render("index", { title: "Login", formAction: "/login" });
+  return res.render("index", {
+    title: "Login",
+    formAction: "/login",
+    messages: req.flash.get(),
+  });
 };
 
 /* Handle login form submission */
@@ -198,4 +203,139 @@ exports.GET_home_page = (req, res, next) => {
       });
     }
   );
+};
+
+/* GET the request-password-reset page */
+exports.GET_password_reset_request = (req, res) => {
+  return res.render("passwordResetForm", {
+    title: "Forgot password",
+  });
+};
+
+/* POST process password reset form submission */
+exports.POST_password_reset_request = (req, res, next) => {
+  // find the user by email address.
+  const email = req.body?.email?.toLowerCase();
+  User.findOne({ email }).exec((err, user) => {
+    if (err) return next(err);
+    if (!user) {
+      // A user with that email wasn't found
+      req.flash.set("A user with that email couldn't be found.");
+      return res.redirect("/");
+    }
+
+    // A user was found.
+
+    // Generate a password reset key for this user.
+    const passwordResetKey = mongoose.Types.ObjectId().toString();
+    const passwordResetHash = bcrypt.hashSync(passwordResetKey, 10);
+    user.passwordResetKey = passwordResetHash;
+
+    // Save the passwordResetKey to the user document in the DB.
+    user.save((err) => {
+      if (err) return next(err);
+      // Password reset link is saved. Now send a reset link to the user's email
+      const courier = CourierClient({
+        authorizationToken: process.env.COURIER_AUTH_TOKEN,
+      });
+
+      // Create the reset link.
+      let resetLink;
+      if (process.env.RAILWAY_ENVIRONMENT === "production") {
+        resetLink = process.env.RAILWAY_STATIC_URL;
+      } else {
+        resetLink = `${req.protocol}://${req.hostname}:${process.env.PORT}`;
+      }
+      resetLink += `/password-reset?id=${user._id}&key=${passwordResetKey}`;
+
+      // Initiate the email.
+      courier
+        .send({
+          message: {
+            to: {
+              data: {
+                name: user.username,
+              },
+              email: user.email,
+            },
+            content: {
+              title: "Password reset link.",
+              body: resetLink,
+            },
+            routing: {
+              method: "single",
+              channels: ["email"],
+            },
+          },
+        })
+        .then(() => {
+          // Email was successfully sent.
+          req.flash.set("Please check your email.");
+          return res.redirect("/");
+        })
+        .catch((err) => {
+          // There was an error sending the email.
+          return next(err);
+        });
+    });
+  });
+};
+
+/* GET the create-new-password page */
+exports.GET_password_reset = (req, res, next) => {
+  // Get the userID & key from the url.
+  const userId = mongoose.Types.ObjectId(req.query.id) || "";
+  const secret = req.query.key || "";
+
+  User.findById(userId, (err, user) => {
+    if (err) return next(err);
+
+    // Validate the user using the key.
+    const userSecret = user?.passwordResetKey || "";
+    const isAuthentic = bcrypt.compareSync(secret, userSecret);
+
+    if (!user || !isAuthentic) {
+      // A user with that email wasn't found or the secret doesn't match.
+      req.flash.set("Invalid password reset link.");
+      return res.redirect("/");
+    }
+
+    // User is valid and allowed to change their password.
+    return res.render("newPasswordForm", {
+      title: "New password",
+      secret: secret,
+      id: userId.toString(),
+    });
+  });
+};
+
+exports.POST_password_reset = (req, res) => {
+  // get the password, secret, and id from the form.
+  const { password: newPassword, secret, id } = req.body;
+  const userId = mongoose.Types.ObjectId(id);
+
+  // Retrieve the user from the DB.
+  User.findById(userId, (err, user) => {
+    if (err) return next(err);
+
+    // Validate the user using the key.
+    const userSecret = user?.passwordResetKey || "";
+    const isAuthentic = bcrypt.compareSync(secret, userSecret);
+
+    if (!user || !isAuthentic) {
+      // A user with that email wasn't found or the secret doesn't match.
+      req.flash.set("Something went wrong.");
+      return res.redirect("/");
+    }
+
+    // User is authenticated. Save their new password.
+    user.password = bcrypt.hashSync(newPassword, 10);
+    user.passwordResetKey = "";
+    user.save((err) => {
+      if (err) return next(err);
+
+      req.flash.set("Password saved.");
+      res.redirect("/");
+    });
+  });
 };

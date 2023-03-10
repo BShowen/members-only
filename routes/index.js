@@ -23,4 +23,18 @@ router.get("/home", authenticationController.GET_home_page);
 /* GET Home or Posts page. */
 router.get("/", authenticationController.GET_root_page);
 
+router.get(
+  "/password-reset-request",
+  authenticationController.GET_password_reset_request
+);
+
+router.post(
+  "/password-reset-request",
+  authenticationController.POST_password_reset_request
+);
+
+router.get("/password-reset", authenticationController.GET_password_reset);
+
+router.post("/password-reset", authenticationController.POST_password_reset);
+
 module.exports = router;

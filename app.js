@@ -91,7 +91,9 @@ app.use((req, res, next) => {
     req.auth.isAuthenticated() ||
     req.url === "/posts" ||
     req.url === "/login" ||
-    req.url === "/signup"
+    req.url === "/signup" ||
+    req.url === "/password-reset-request" ||
+    req.path === "/password-reset"
   ) {
     return next();
   } else {
