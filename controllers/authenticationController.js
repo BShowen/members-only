@@ -58,13 +58,13 @@ exports.GET_signup_page = (req, res) => {
 
 /* Handle signup form submission */
 exports.POST_signup_page = (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
-  if (username.length <= 0 || password.length <= 0) {
+  if (username.length <= 0 || password.length <= 0 || email.length <= 0) {
     return res.render("index", {
       title: "Sign up",
       formAction: "/signup",
-      messages: ["Username and password are required."],
+      messages: ["Username, password, and email are required."],
     });
   }
 
@@ -79,8 +79,9 @@ exports.POST_signup_page = (req, res, next) => {
     }
 
     const newUser = new User({
-      username,
+      username: username.toLowerCase(),
       password: bcrypt.hashSync(password, 10),
+      email: email.toLowerCase(),
     });
 
     newUser.save((err) => {

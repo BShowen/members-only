@@ -21,6 +21,16 @@ block content
               label(for="username") Username 
             div.form-floating.mb-3
               input(
+                id="email", 
+                name="email", 
+                placeholder="Email", 
+                type="email", 
+                class="form-control form-control-lg shadow-sm", 
+                class= formAction === "/login" ? "d-none" : ""
+              )  
+              label(for="email") Email 
+            div.form-floating.mb-3
+              input(
                 id="password", 
                 name="password", 
                 type="password", 
