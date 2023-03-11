@@ -24,7 +24,15 @@ exports.GET_login_page = (req, res) => {
 
 /* Handle login form submission */
 exports.POST_login_page = (req, res, next) => {
-  req.auth.loginUser((err, response) => {
+  const regex = /^\w+@\w+\.com$/; //Simple text for email
+  const isEmail = regex.test(req.body.usernameOrEmail);
+
+  const credentials = {
+    identifier: { [isEmail ? "email" : "username"]: req.body.usernameOrEmail },
+    credential: { password: req.body.password },
+  };
+
+  req.auth.loginUser(credentials, (err, response) => {
     if (err) return next(err);
     if (response.isAuthenticated) {
       if (req.body.remember === "on") {
@@ -86,23 +94,26 @@ exports.POST_signup_page = (req, res, next) => {
 
     newUser.save((err) => {
       if (err) return next(err); //Error saving the user.
-      req.auth.loginUser((err, response) => {
-        if (err) return next(err); //Error logging in the user.
-        if (req.auth.isAuthenticated()) {
-          // User successfully logged in.
-          return res.redirect("/home");
-        } else {
-          // User was not able to be logged in due to incorrect password or
-          // username. This should never be reached because the user just
-          // created their account.
-          /**
-           * Console log the messages for now. In the future these messages will
-           * be displayed to the user.
-           */
-          console.log(response.message);
-          res.redirect("/");
+      req.auth.loginUser(
+        { identifier: { username }, credential: { password } },
+        (err, response) => {
+          if (err) return next(err); //Error logging in the user.
+          if (req.auth.isAuthenticated()) {
+            // User successfully logged in.
+            return res.redirect("/home");
+          } else {
+            // User was not able to be logged in due to incorrect password or
+            // username. This should never be reached because the user just
+            // created their account.
+            /**
+             * Console log the messages for now. In the future these messages will
+             * be displayed to the user.
+             */
+            console.log(response.message);
+            res.redirect("/");
+          }
         }
-      });
+      );
     });
   });
 };

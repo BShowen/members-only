@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
  * Once thats done, req.auth will be an object with some authentication methods.
  *
  * req.auth = {
- *  loginUser(callback) : callback(error, {
+ *  loginUser(credentials, callback) : callback(error, {
  *    Boolean: isAuthenticated,
  *    String: message
  *  })
@@ -46,7 +46,7 @@ module.exports = class Authenticator {
     // Find the user in the DB and create a session.
     const cookie = req.signedCookies.remember;
     const userId = mongoose.Types.ObjectId(cookie);
-    this.#model.findById(userId, "username", (err, user) => {
+    this.#model.findById(userId, (err, user) => {
       if (err) return next(err);
       this.#createSession(req, user._id.toString());
       next();
@@ -78,33 +78,53 @@ module.exports = class Authenticator {
     req.session.userId = userId;
   }
 
-  #login(req, cb) {
+  #login(req, credentials, cb) {
     const returnObject = {
       isAuthenticated: false,
       user: undefined,
       message: "",
     };
-    this.#model.findOne({ username: req.body.username }, (err, user) => {
+
+    // credentials = {
+    //   identifier: { email: "foo@bar.com" },
+    //   credential: { password: "BarBaz" },
+    // };
+
+    // identifierKey = "email",
+    // credentialKey = "password"
+    const [identifierKey, credentialKey] = Object.keys(credentials).map(
+      (key) => Object.keys(credentials[key])[0]
+    );
+
+    // credentialValue = "BarBaz"
+    const credentialValue = credentials.credential[credentialKey];
+
+    // query = {email: "foo@bar.com"}
+    const query = {
+      [identifierKey]: credentials.identifier[identifierKey],
+    };
+
+    this.#model.findOne(query, (err, user) => {
       if (err) return cb(err);
       if (!user) {
-        // Didn't find that username in the db.
-        returnObject.message = "Invalid username.";
+        // Didn't find that user in the db.
+        returnObject.message = `Invalid ${identifierKey}.`;
         return cb(null, returnObject);
       } else {
         // Found the user. Validate password.
-        bcrypt.compare(req.body.password, user.password, (err, isValid) => {
+        bcrypt.compare(credentialValue, user[credentialKey], (err, isValid) => {
           if (err) return cb(err);
           if (isValid) {
             // Password is valid
             // Don't store password in session
-            delete user._doc["password"];
+            // delete user._doc[credentialValue];
             this.#createSession(req, user._id.toString());
             returnObject.isAuthenticated = true;
             returnObject.user = user;
             return cb(null, returnObject);
           } else {
-            // Password doesn't match.
-            returnObject.message = "Invalid password.";
+            // Passwords don't match.
+            returnObject.message = `Invalid ${credentialKey}.`;
             return cb(null, returnObject);
           }
         });

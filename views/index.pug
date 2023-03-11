@@ -12,11 +12,22 @@ block content
           form(action= formAction, method="POST")
             div.form-floating.mb-3
               input(
+                id="usernameOrEmail", 
+                name="usernameOrEmail", 
+                placeholder="Username or Email", 
+                type="text", 
+                class="form-control form-control-lg shadow-sm"
+                class= formAction === "/login" ? "" : "d-none"
+              )  
+              label(for="usernameOrEmail") Username or Email
+            div.form-floating.mb-3
+              input(
                 id="username", 
                 name="username", 
                 placeholder="Username", 
                 type="text", 
                 class="form-control form-control-lg shadow-sm"
+                class= formAction === "/login" ? "d-none" : ""
               )  
               label(for="username") Username 
             div.form-floating.mb-3
